@@ -8,7 +8,19 @@ import React from "react"
 import { useColorScheme } from "react-native"
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { WelcomeScreen, DemoScreen, DemoListScreen } from "../screens"
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { Ionicons } from "@expo/vector-icons"
+import {
+  SplaceScreen,
+  WelcomeScreen,
+  SigninScreen,
+  SignupScreen,
+  ForgetScreen,
+  HomeScreen,
+  PopularScreen,
+  VclipScreen,
+  ShowCaseScreen,
+} from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigation-utilities"
 
 /**
@@ -24,9 +36,16 @@ import { navigationRef, useBackButtonHandler } from "./navigation-utilities"
  *   https://reactnavigation.org/docs/typescript#type-checking-the-navigator
  */
 export type NavigatorParamList = {
+  splace: undefined
   welcome: undefined
-  demo: undefined
-  demoList: undefined
+  signin: undefined
+  signup: undefined
+  forget: undefined
+  bottomtab: undefined
+  home: undefined
+  popular: undefined
+  vclip: undefined
+  show: undefined
   // 🔥 Your screens go here
 }
 
@@ -39,16 +58,52 @@ const AppStack = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="welcome"
+      initialRouteName="splace"
     >
-      <Stack.Screen name="welcome" component={WelcomeScreen} />
-      <Stack.Screen name="demo" component={DemoScreen} />
-      <Stack.Screen name="demoList" component={DemoListScreen} />
       {/** 🔥 Your screens go here */}
+      <Stack.Screen name="splace" component={SplaceScreen} />
+      <Stack.Screen name="welcome" component={WelcomeScreen} />
+      <Stack.Screen name="signin" component={SigninScreen} />
+      <Stack.Screen name="signup" component={SignupScreen} />
+      <Stack.Screen name="forget" component={ForgetScreen} />
+      <Stack.Screen name="bottomtab" component={BottomTab} />
+      <Stack.Screen name="show" component={ShowCaseScreen} />
     </Stack.Navigator>
   )
 }
 
+const homename = "Home"
+const popularname = "Popular"
+const videoClip = "Vclip"
+const Tab = createBottomTabNavigator()
+const BottomTab = () => {
+  return (
+    <Tab.Navigator
+      initialRouteName={homename}
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName
+          let rn = route.name
+
+          if (rn === homename) {
+            iconName = focused ? "home" : "home-outline"
+          } else if (rn === popularname) {
+            iconName = focused ? "list" : "list-outline"
+          } else if (rn === videoClip) {
+            iconName = focused ? "videocam" : "videocam-outline"
+            // } else if (rn === videos) {
+            //   iconName = focused ? "play-circle" : "play-circle-outline"
+          }
+          return <Ionicons name={iconName} size={size} color={"#6bfc03"} />
+        },
+      })}
+    >
+      <Tab.Screen name={homename} component={HomeScreen} options={{ headerShown: false }} />
+      <Tab.Screen name={popularname} component={PopularScreen} options={{ headerShown: false }} />
+      <Tab.Screen name={videoClip} component={VclipScreen} options={{ headerShown: false }} />
+    </Tab.Navigator>
+  )
+}
 interface NavigationProps extends Partial<React.ComponentProps<typeof NavigationContainer>> {}
 
 export const AppNavigator = (props: NavigationProps) => {
@@ -61,6 +116,7 @@ export const AppNavigator = (props: NavigationProps) => {
       {...props}
     >
       <AppStack />
+      {/* <BottomTab /> */}
     </NavigationContainer>
   )
 }
@@ -76,5 +132,5 @@ AppNavigator.displayName = "AppNavigator"
  *
  * `canExit` is used in ./app/app.tsx in the `useBackButtonHandler` hook.
  */
-const exitRoutes = ["welcome"]
+const exitRoutes = ["splace"]
 export const canExit = (routeName: string) => exitRoutes.includes(routeName)
